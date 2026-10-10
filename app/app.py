@@ -390,3 +390,22 @@ with tab2:
                 <div style="font-size:1.6rem; font-weight:700; color:#13294B;">{total_valid:,}</div>
               </div>
               <div style="flex:1; min-width:140px; background:rgba(232,84,62,0.07); border-radius:12px; padding:14px 16px; border:1px solid #E8543E33;">
+                <div style="font-size:0.75rem; color:#6B7C93; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">High risk</div>
+                <div style="font-size:1.6rem; font-weight:700; color:#E8543E;">{flagged_count:,}</div>
+              </div>
+              <div style="flex:1; min-width:140px; background:#F4F7FB; border-radius:12px; padding:14px 16px; border:1px solid #E2E8F0;">
+                <div style="font-size:0.75rem; color:#6B7C93; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">Risk rate</div>
+                <div style="font-size:1.6rem; font-weight:700; color:#13294B;">{risk_rate:.1%}</div>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if len(rejected) > 0:
+            st.warning(f"{len(rejected):,} row(s) rejected before scoring, invalid values, not model output")
+            st.dataframe(rejected[REQUIRED_COLUMNS + ["rejection_reason"]])
+
+        if len(scored) > 0:
+            st.dataframe(scored.sort_values("churn_probability", ascending=False))
+            st.download_button("Download scored file", scored.to_csv(index=False), "scored_customers.csv")
