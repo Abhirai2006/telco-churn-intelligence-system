@@ -358,3 +358,35 @@ with tab2:
         if missing:
             st.error("This file is missing required columns: " + ", ".join(missing))
             st.stop()
+
+        with st.spinner(f"Scoring {len(batch):,} customers..."):
+            try:
+                cleaned = clean_for_scoring(batch)
+                valid_mask, reject_reason = validate_batch(cleaned)
+
+                scored = batch.loc[valid_mask].copy()
+                rejected = batch.loc[~valid_mask].copy()
+                rejected["rejection_reason"] = reject_reason.loc[~valid_mask]
+
+                if len(scored) > 0:
+                    proba = model.predict_proba(cleaned.loc[valid_mask, REQUIRED_COLUMNS])[:, 1]
+                    scored["churn_probability"] = proba
+                    scored["flagged_high_risk"] = scored["churn_probability"] >= threshold
+            except Exception as e:
+                st.error(f"Could not score this file. Details: {e}")
+                st.stop()
+
+        flagged_count = int(scored["flagged_high_risk"].sum()) if len(scored) > 0 else 0
+        total_valid = len(scored)
+        risk_rate = (flagged_count / total_valid) if total_valid else 0.0
+
+        # Animated batch summary strip
+        st.markdown(
+            f"""
+            <div class="fade-in-up" style="
+                display:flex; gap:14px; flex-wrap:wrap; margin: 0.4rem 0 1rem 0;">
+              <div style="flex:1; min-width:140px; background:#F4F7FB; border-radius:12px; padding:14px 16px; border:1px solid #E2E8F0;">
+                <div style="font-size:0.75rem; color:#6B7C93; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">Scored</div>
+                <div style="font-size:1.6rem; font-weight:700; color:#13294B;">{total_valid:,}</div>
+              </div>
+              <div style="flex:1; min-width:140px; background:rgba(232,84,62,0.07); border-radius:12px; padding:14px 16px; border:1px solid #E8543E33;">
