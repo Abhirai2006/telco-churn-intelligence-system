@@ -148,3 +148,103 @@ def render_prediction_card(proba, threshold):
             overflow:hidden;
         ">
           <div class="prob-fill" style="
+              height:100%;
+              width:{pct:.2f}%;
+              background: linear-gradient(90deg, {bar_color}CC, {bar_color});
+              border-radius:999px;
+          "></div>
+        </div>
+        <div style="
+            position:absolute;
+            top:-3px;
+            left:{thr_pct:.2f}%;
+            width:2px;
+            height:18px;
+            background:#13294B;
+            opacity:0.55;
+            transform:translateX(-1px);
+        " title="Decision threshold"></div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.75rem; color:#6B7C93;">
+          <span>0%</span>
+          <span>threshold {threshold:.0%}</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <div style="margin-top:0.95rem; font-size:0.95rem; color:#13294B; font-weight:500;">
+        {status_msg}
+      </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------------------
+# Global professional motion + polish (works in Colab / Streamlit / trycloudflare)
+# ---------------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Page entrance */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes fillBar {
+      from { width: 0% !important; }
+    }
+    @keyframes softPulse {
+      0%, 100% { box-shadow: 0 8px 24px rgba(232, 84, 62, 0.12); }
+      50%      { box-shadow: 0 8px 28px rgba(232, 84, 62, 0.28); }
+    }
+    @keyframes badgeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 0.92; transform: translateY(0); }
+    }
+
+    .fade-in-up    { animation: fadeInUp 0.55s ease-out both; }
+    .fade-in-right { animation: fadeInRight 0.6s ease-out both; }
+    .fade-in       { animation: fadeIn 0.5s ease-out both; }
+
+    .prob-fill {
+      animation: fillBar 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .risk-pulse {
+      animation: softPulse 2.2s ease-in-out infinite;
+    }
+
+    /* Title polish */
+    h1 {
+      letter-spacing: -0.02em !important;
+    }
+
+    /* Primary button hover */
+    div.stButton > button {
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+    }
+    div.stButton > button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(232, 84, 62, 0.25) !important;
+    }
+    div.stButton > button:active {
+      transform: translateY(0);
+    }
+
+    /* Tabs underline feel */
+    button[data-baseweb="tab"] {
+      transition: color 0.2s ease !important;
+    }
+
+    /* Builder credit badge */
+    .builder-badge {
+      position: fixed;
