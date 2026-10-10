@@ -1,0 +1,13 @@
+gender,SeniorCitizen,Partner,Dependents,tenure,PhoneService,MultipleLines,InternetService,OnlineSecurity,OnlineBackup,DeviceProtection,TechSupport,StreamingTV,StreamingMovies,Contract,PaperlessBilling,PaymentMethod,MonthlyCharges,TotalCharges
+Female,0.0,Yes,No,12,Yes,No,DSL,Yes,No,No,Yes,No,No,Month-to-month,Yes,Electronic check,55.0,660.0
+Male,0.0,No,No,-5,Yes,No,Fiber optic,No,No,No,No,Yes,Yes,Month-to-month,Yes,Electronic check,90.0,180.0
+Female,0.0,Yes,Yes,250,Yes,Yes,DSL,Yes,Yes,Yes,Yes,No,No,Two year,No,Bank transfer (automatic),60.0,15000.0
+Male,2.0,No,No,8,Yes,No,DSL,No,No,No,No,No,No,One year,Yes,Mailed check,40.0,320.0
+Female,0.0,Yes,No,20,Yes,No,Fiber optic,Yes,No,No,No,Yes,No,Month-to-month,Yes,Credit card (automatic),0.0,0.0
+Male,1.0,No,No,10,Yes,Yes,Fiber optic,No,No,No,No,Yes,Yes,Month-to-month,Yes,Electronic check,999.0,9990.0
+Female,0.0,No,Yes,15,Yes,No,DSL,Yes,Yes,No,Yes,No,No,One year,No,Bank transfer (automatic),50.0,-100.0
+Male,0.0,Yes,Yes,twelve,Yes,No,DSL,No,No,No,No,No,No,Month-to-month,Yes,Electronic check,35.0,35.0
+,,,,,,,,,,,,,,,,,,
+female,0.0,yes,no,6,Yes,No,fiber optic,No,No,No,No,Yes,Yes,month-to-month,Yes,electronic check,92.0,552.0
+Male,0.0,No,No,3,Yes,No,Fiber optic,No,No,No,No,No,No,Month-to-month,Yes,Crypto Wallet,70.0,210.0
+Male,0.0,Yes,Yes,48,Yes,Yes,DSL,Yes,Yes,Yes,Yes,No,No,Two year,No,Credit card (automatic),65.0,3120.0
