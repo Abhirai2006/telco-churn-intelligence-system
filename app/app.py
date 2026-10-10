@@ -248,3 +248,113 @@ st.markdown(
     /* Builder credit badge */
     .builder-badge {
       position: fixed;
+      bottom: 18px;
+      right: 22px;
+      z-index: 999;
+      background: #13294B;
+      color: #FFFFFF;
+      font-family: "Source Sans Pro", sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(19, 41, 75, 0.18);
+      opacity: 0.92;
+      pointer-events: none;
+      user-select: none;
+      animation: badgeIn 0.7s ease-out 0.35s both;
+    }
+    .builder-badge span {
+      opacity: 0.75;
+      font-weight: 400;
+      margin-right: 4px;
+    }
+
+    /* Metric / card spacing in batch results */
+    div[data-testid="stMetric"] {
+      animation: fadeInUp 0.5s ease-out both;
+    }
+    </style>
+    <div class="builder-badge"><span>Built by</span> Abhishek Rai A</div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Page header: title, model line and dataset source.
+st.markdown(
+    f"""
+    <div class="fade-in-up" style="margin:0 0 0.25rem 0;">
+      <h1 style="margin:0 0 0.15rem 0; padding:0; color:#13294B; font-size:2.1rem;
+                 letter-spacing:-0.02em; font-weight:700; line-height:1.2;">
+        Customer Churn Intelligence Dashboard
+      </h1>
+      <p style="margin:0; color:#6B7C93; font-size:0.95rem;">
+        Model: {meta['model_name']}, decision threshold: {threshold:.2f}
+      </p>
+      <p style="margin:0.35rem 0 0 0; color:#6B7C93; font-size:0.9rem;">
+        Dataset: IBM Telco Customer Churn
+      </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.divider()
+
+tab1, tab2 = st.tabs(["Score one customer", "Score a batch"])
+
+with tab1:
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        gender = st.selectbox("Gender", ["Female", "Male"])
+        senior = st.selectbox("Senior citizen", [0, 1])
+        partner = st.selectbox("Has partner", ["Yes", "No"])
+        dependents = st.selectbox("Has dependents", ["Yes", "No"])
+        tenure = st.slider("Tenure (months)", 0, 72, 12)
+    with col2:
+        contract = st.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
+        internet = st.selectbox("Internet service", ["DSL", "Fiber optic", "No"])
+        online_security = st.selectbox("Online security", ["Yes", "No", "No internet service"])
+        tech_support = st.selectbox("Tech support", ["Yes", "No", "No internet service"])
+        payment = st.selectbox("Payment method", [
+            "Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
+    with col3:
+        monthly_charges = st.slider("Monthly charges ($)", 18.0, 120.0, 70.0)
+        total_charges = st.number_input("Total charges ($)", value=float(monthly_charges * tenure))
+        phone_service = st.selectbox("Phone service", ["Yes", "No"])
+        paperless = st.selectbox("Paperless billing", ["Yes", "No"])
+
+    if st.button("Predict churn risk", type="primary"):
+        if total_charges < 0:
+            st.error("Total charges cannot be negative, check the value and try again")
+        else:
+            row = pd.DataFrame([{
+                "gender": gender, "SeniorCitizen": senior, "Partner": partner, "Dependents": dependents,
+                "tenure": tenure, "PhoneService": phone_service, "MultipleLines": "No",
+                "InternetService": internet, "OnlineSecurity": online_security, "OnlineBackup": "No",
+                "DeviceProtection": "No", "TechSupport": tech_support, "StreamingTV": "No",
+                "StreamingMovies": "No", "Contract": contract, "PaperlessBilling": paperless,
+                "PaymentMethod": payment, "MonthlyCharges": monthly_charges, "TotalCharges": total_charges,
+            }])
+            try:
+                with st.spinner("Scoring customer..."):
+                    proba = float(model.predict_proba(row)[0, 1])
+                render_prediction_card(proba, threshold)
+            except Exception as e:
+                st.error(f"Could not score this customer. Details: {e}")
+
+with tab2:
+    st.caption("Upload a CSV with these columns: " + ", ".join(REQUIRED_COLUMNS))
+    uploaded = st.file_uploader("Upload a CSV", type="csv")
+    if uploaded is not None:
+        try:
+            batch = pd.read_csv(uploaded)
+        except Exception as e:
+            st.error(f"Could not read this file as a CSV. Details: {e}")
+            st.stop()
+
+        missing = [c for c in REQUIRED_COLUMNS if c not in batch.columns]
+        if missing:
+            st.error("This file is missing required columns: " + ", ".join(missing))
+            st.stop()
